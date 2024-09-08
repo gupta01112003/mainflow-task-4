@@ -1,0 +1,109 @@
+import tkinter as tk
+from tkinter import messagebox
+
+# Function to evaluate expressions
+def evaluate(event=None):
+    try:
+        result = str(eval(entry.get()))
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, result)
+    except Exception as e:
+        messagebox.showerror("Error", "Invalid Expression")
+
+# ac button       
+def clear():
+    entry.delete(0, tk.END)
+
+# button for x  
+def clear_one():
+    current_text = entry.get()
+    if current_text:
+        entry.delete(len(current_text) - 1)
+
+#appending char      
+def append_char(char):
+    entry.insert(tk.END, char)
+
+#initializing window
+
+root = tk.Tk()
+root.title("Calculator")
+root.geometry("400x500")
+root.config(bg="black")
+
+
+entry = tk.Entry(root, font=("Arial", 24), bd=0, bg="black", fg="white", insertbackground="white", justify="right")
+entry.grid(row=0, column=0, columnspan=4, pady=20, padx=20)
+
+# Button style
+button_style = {
+    "font": ("Arial", 18),
+    "bd": 0,
+    "fg": "white",
+    "activebackground": "#333",
+    "activeforeground": "white",
+    "highlightthickness": 1,
+    "highlightbackground": "white",
+    "relief": "flat"
+}
+
+# Special button styles
+clear_button_style = button_style.copy()
+clear_button_style["bg"] = "#1E90FF"
+    
+equal_button_style = button_style.copy()
+equal_button_style["bg"] = "#1E90FF"
+
+number_button_style = button_style.copy()
+number_button_style["bg"] = "black"
+
+# Function to create buttons
+def create_button(root, text, style, command):
+    button = tk.Button(root, text=text, **style, command=command)
+    button.config(
+        height=2,
+        width=4,
+        borderwidth=2,
+        highlightthickness=1,
+        highlightbackground="white",
+        relief="groove"
+    )
+    return button
+
+# Button layout
+
+buttons = [
+    'AC','%','x','/',
+    '7', '8', '9', '*',
+    '4', '5', '6', '-',
+    '1', '2', '3', '+',
+    '00','0','.','='
+]
+
+
+row_val = 1
+col_val = 0
+for button in buttons:
+    if button == 'AC':
+        create_button(root, button, clear_button_style, clear).grid(row=row_val, column=col_val, sticky="nsew", padx=5, pady=5)
+    elif button == 'x':
+        create_button(root, button, number_button_style, clear_one).grid(row=row_val, column=col_val, sticky="nsew", padx=5, pady=5)
+    elif button == '=':
+        create_button(root, button, equal_button_style, evaluate).grid(row=row_val, column=col_val, columnspan=2, sticky="nsew", padx=5, pady=5)
+        col_val += 1
+    else:
+        create_button(root, button, number_button_style, lambda char=button: append_char(char)).grid(row=row_val, column=col_val, sticky="nsew", padx=5, pady=5)
+    
+    col_val += 1
+    if col_val > 3:
+        col_val = 0
+        row_val += 1
+
+for i in range(6): 
+    root.grid_rowconfigure(i, weight=1)
+for i in range(4): 
+    root.grid_columnconfigure(i, weight=1)
+
+root.bind('<Return>', evaluate)
+
+root.mainloop()
